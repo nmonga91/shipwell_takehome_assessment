@@ -5,8 +5,11 @@
 2. Only Fahrenheit temperature scale is retrieved due to limitations with the Weather.com mock API response
 
 ## Starting the Application:
-1. `cd weather_info/ && python manage.py runserver`
-2. App will start on `http://localhost:8000/`
+1. `virtualenv env && source env/bin/activate`
+2. `cd weather_info/`
+3. `pip install -r requirements.txt`
+4. `python manage.py runserver`
+	* App will start on `http://localhost:8000/`
 
 ## API Documentation:
 
