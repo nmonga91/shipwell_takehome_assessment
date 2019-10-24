@@ -7,8 +7,9 @@
 ## Starting the Application:
 1. `virtualenv env && source env/bin/activate`
 2. `cd weather_info/`
-3. `pip install -r requirements.txt`
-4. `python manage.py runserver`
+3. Update `weather_info/settings.py` and set the `GOOGLE_MAPS_API_KEY` value to the key provided in the email.
+4. `pip install -r requirements.txt`
+5. `python manage.py runserver`
 	* App will start on `http://localhost:8000/`
 	* Submitting a `GET` request to `http://localhost:8000/` should yeild: `{"status":"running"}`
 		* This will ensure the app has started successfully
