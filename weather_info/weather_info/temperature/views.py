@@ -2,10 +2,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from weather_info.temperature.clients.accuweather_client import AccuweatherClient
+from weather_info.temperature.clients.google_maps_client import GoogleMapsClient
+from weather_info.temperature.clients.noaa_client import NoaaClient
+from weather_info.temperature.clients.weatherdotcom_client import WeatherdotcomClient
 from weather_info.temperature.serializers.validation_serializers import AverageTemperatureRequestSerializer
-from weather_info.temperature.temperature_clients.accuweather_client import AccuweatherClient
-from weather_info.temperature.temperature_clients.noaa_client import NoaaClient
-from weather_info.temperature.temperature_clients.weatherdotcom_client import WeatherdotcomClient
 
 
 class AverageTemperatureViewSet(APIView):
@@ -31,8 +32,36 @@ class AverageTemperatureViewSet(APIView):
             }
             return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
 
-        lat = request_data['latitude']
-        long = request_data['longitude']
+        # Validate lat/long with Google Maps API
+        google_maps_client = GoogleMapsClient()
+
+        if request_data.get('latitude') and request_data.get('longitude'):
+            lat = request_data['latitude']
+            long = request_data['longitude']
+        else:
+            if not request_data.get('zip_code'):
+                response = {
+                    'errors': 'If latitude & longitude are not provided, zip_code must be provided.'
+                }
+                return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+
+            zip_code = request_data['zip_code']
+            lat_long = google_maps_client.get_lat_long_from_zip(zip_code)
+
+            if len(lat_long) == 0:
+                response = {
+                    'errors': 'Zip Code provided is invalid and does not yield lat/long values.'
+                }
+                return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+
+            lat = lat_long['lat']
+            long = lat_long['long']
+
+        if not google_maps_client.validate_lat_long(lat, long):
+            response = {
+                'errors': f'Invalid latitude/longitude values provided.'
+            }
+            return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
         weather_sources = request_data.get('filters', [])
 
         # If the optional filter list is not provided, set to the default of ALL the filterable weather services

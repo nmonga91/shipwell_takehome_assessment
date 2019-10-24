@@ -25,7 +25,7 @@ SECRET_KEY = 'uyu2ty-5r#kq=x6c_&xlfd5t@be_q&4t5s$q7h1y7p2q%a3_t('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -129,3 +129,4 @@ REST_FRAMEWORK = {
 }
 
 WEATHER_API_ENDPOINT = 'http://127.0.0.1:5000'
+GOOGLE_MAPS_API_KEY = 'AIzaSyCDbX5AcIq5VRbm_C-CR8q1SQPoogQViFI'

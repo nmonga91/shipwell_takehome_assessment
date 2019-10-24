@@ -17,11 +17,14 @@
 
 ### Request Parameters
 
-1. `latitude` (Type: Long, Required: True): Latitude for which to retrieve average temperature
-2. `longitude` (Type: Long, Required: True): Longitude for which to retrieve average temperature
-3. `filters` (Type: List of Strings, Required: False): List of weather services to filter on. If 
+1. `latitude` (Type: Long, Required: False): Latitude for which to retrieve average temperature
+2. `longitude` (Type: Long, Required: False): Longitude for which to retrieve average temperature
+3. `zip_code` (Type: Integer, Required: False): Zip code for which to derive latitude and longitude
+4. `filters` (Type: List of Strings, Required: False): List of weather services to filter on. If 
 this parameter is not present or is an empty list, it will default to using ALL the weather services.
 Valid weather services => ["noaa", "weather.com", "accuweather"].
+
+**Note**: If latitude, longitude, AND zip_code are provided, latitude and longitude will be used. If latitude or longitude are not provided, zip_code will be required.
 
 #### Sample Request (JSON)
 ```
