@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from weather_info.status.views import StatusViewSet
+
 urlpatterns = [
+    path('', StatusViewSet.as_view()),
     path('admin/', admin.site.urls),
     path('api/temperature/', include('weather_info.temperature.urls'))
 ]

@@ -10,6 +10,8 @@
 3. `pip install -r requirements.txt`
 4. `python manage.py runserver`
 	* App will start on `http://localhost:8000/`
+	* Submitting a `GET` request to `http://localhost:8000/` should yeild: `{"status":"running"}`
+		* This will ensure the app has started successfully
 
 ## API Documentation:
 
