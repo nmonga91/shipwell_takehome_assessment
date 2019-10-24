@@ -15,7 +15,7 @@ class AverageTemperatureViewSet(APIView):
     def check_valid_filters(self, filter_list):
         return set(filter_list).issubset(set(self.default_filters))
 
-    def post(self, request):
+    def validate_request(self, request):
         # Validate input using serializers
         # valid input =
         # {
@@ -30,7 +30,7 @@ class AverageTemperatureViewSet(APIView):
             response = {
                 'errors': serialized_request.errors
             }
-            return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+            return response
 
         # Validate lat/long with Google Maps API
         google_maps_client = GoogleMapsClient()
@@ -43,7 +43,7 @@ class AverageTemperatureViewSet(APIView):
                 response = {
                     'errors': 'If latitude & longitude are not provided, zip_code must be provided.'
                 }
-                return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+                return response
 
             zip_code = request_data['zip_code']
             lat_long = google_maps_client.get_lat_long_from_zip(zip_code)
@@ -52,7 +52,7 @@ class AverageTemperatureViewSet(APIView):
                 response = {
                     'errors': 'Zip Code provided is invalid and does not yield lat/long values.'
                 }
-                return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+                return response
 
             lat = lat_long['lat']
             long = lat_long['long']
@@ -61,7 +61,7 @@ class AverageTemperatureViewSet(APIView):
             response = {
                 'errors': f'Invalid latitude/longitude values provided.'
             }
-            return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+            return response
         weather_sources = request_data.get('filters', [])
 
         # If the optional filter list is not provided, set to the default of ALL the filterable weather services
@@ -73,8 +73,24 @@ class AverageTemperatureViewSet(APIView):
             response = {
                 'errors': f'Invalid filters provided. Valid values => {self.default_filters}'
             }
-            return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+            return response
 
+        response = {
+            'lat': lat,
+            'long': long,
+            'weather_sources': weather_sources
+        }
+
+        return response
+
+    def post(self, request):
+        validation_result = self.validate_request(request)
+        if 'errors' in self.validate_request(request):
+            return Response(data=validation_result['errors'], status=status.HTTP_400_BAD_REQUEST)
+
+        lat = validation_result['lat']
+        long = validation_result['long']
+        weather_sources = validation_result['weather_sources']
         total_temperature = 0
 
         for weather_source in weather_sources:
